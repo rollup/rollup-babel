@@ -1,5 +1,9 @@
 # rollup-babel
 
+## 0.1.3
+
+* Update rollup/babel-core versions
+
 ## 0.1.2
 
 * Update rollup version
