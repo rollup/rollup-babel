@@ -56,12 +56,20 @@ function rollupBabel ( options ) {
 
 	var load = options.load;
 
+	var transformers = Array.isArray( options.transform ) ?
+		options.transform :
+		options.transform ? [ options.transform ] : [];
+
 	options.load = function ( id ) {
 		if ( /babel-helpers/.test( id ) ) return 'export default ' + PLACEHOLDER;
 		var code = 'import babelHelpers from "babel-helpers";\n' +
 			( load ? load( id ) : fs.readFileSync( id, 'utf-8' ) );
 
 		var options = extend({ filename: id }, babelOptions );
+
+		code = transformers.reduce( function ( code, fn ) {
+			return fn( code, id );
+		}, code );
 
 		var transformed = babel.transform( code, options );
 		transformed.metadata.usedHelpers.forEach( function ( helper ) {
