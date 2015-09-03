@@ -1,5 +1,9 @@
 # rollup-babel
 
+## 0.1.4
+
+* Support `transform` option
+
 ## 0.1.3
 
 * Update rollup/babel-core versions
