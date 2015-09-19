@@ -1,8 +1,12 @@
 # rollup-babel
 
-## 0.1.4
+## 0.1.5
 
 * Update rollup version to 0.16.0
+
+## 0.1.4
+
+* Support `transform` option
 
 ## 0.1.3
 
