@@ -1,5 +1,9 @@
 # rollup-babel
 
+## 0.2.0
+
+* Downgrade rollup to 0.15.0, pending [rollup#132](https://github.com/rollup/rollup/issues/132)
+
 ## 0.1.5
 
 * Update rollup version to 0.16.0
