@@ -1,11 +1,11 @@
 {
   "name": "rollup-babel",
   "description": "Rollup optimised for babel users",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": "Rich Harris",
   "dependencies": {
     "babel-core": "^5.8.23",
-    "rollup": "^0.17.3",
+    "rollup": "^0.18.0",
     "sander": "^0.3.4"
   }
 }
