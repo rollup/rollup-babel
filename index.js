@@ -1,11 +1,6 @@
-var fs = require( 'fs' );
-var path = require( 'path' );
 var sander = require( 'sander' );
 var rollup = require( 'rollup' );
 var babel = require( 'babel-core' );
-
-var PLACEHOLDER = '"#BABEL_HELPERS_PLACEHOLDER#"';
-var absolutePath = /^(?:\/|(?:[A-Za-z]:)?\\)/;
 
 function extend ( target, source ) {
 	Object.keys( source ).forEach( function ( key ) {
@@ -32,94 +27,74 @@ function rollupBabel ( options ) {
 
 	var usedHelpers = [];
 
-	options.resolveId = function ( id, importer, options ) {
-		// recreate default resolver, but treat babel-helpers as special case
-		// TODO would be nice if this was easier to compose...
-		if ( id === 'babel-helpers' ) return 'babel-helpers';
-
-		// absolute paths are left untouched
-		if ( absolutePath.test( id ) ) return id;
-
-		// if this is the entry point, resolve against cwd
-		if ( importer === undefined ) return path.resolve( id );
-
-		// we try to resolve external modules
-		if ( id[0] !== '.' ) {
-			// unless we want to keep it external, that is
-			if ( ~options.external.indexOf( id ) ) return null;
-
-			return options.resolveExternal( id, importer, options );
-		}
-
-		return path.resolve( path.dirname( importer ), id ).replace( /\.js$/, '' ) + '.js';
-	};
-
-	var load = options.load;
-
 	var transformers = Array.isArray( options.transform ) ?
 		options.transform :
 		options.transform ? [ options.transform ] : [];
 
-	options.load = function ( id ) {
-		if ( /babel-helpers/.test( id ) ) return 'export default ' + PLACEHOLDER;
-		var code = 'import babelHelpers from "babel-helpers";\n' +
-			( load ? load( id ) : fs.readFileSync( id, 'utf-8' ) );
-
+	function rollupBabelTransformer ( code, id ) {
 		var options = extend({ filename: id }, babelOptions );
 
-		code = transformers.reduce( function ( code, fn ) {
-			return fn( code, id );
-		}, code );
-
 		var transformed = babel.transform( code, options );
+
 		transformed.metadata.usedHelpers.forEach( function ( helper ) {
-			if ( !~usedHelpers.indexOf( helper ) ) {
-				usedHelpers.push( helper );
-			}
+			if ( !~usedHelpers.indexOf( helper ) ) usedHelpers.push( helper );
 		});
 
-		return transformed.code;
-	};
+		return {
+			code: transformed.code,
+			map: transformed.map
+		};
+	}
+
+	transformers.push( rollupBabelTransformer );
+	options.transform = transformers;
 
 	// TODO need to create some hooks so we don't need to reimplement all this...
 	return rollup.rollup( options )
 		.then( function ( bundle ) {
-			var helpers = babel.buildExternalHelpers( usedHelpers, 'var' );
+			var helpers = babel.buildExternalHelpers( usedHelpers, 'var' )
+				.replace( /var babelHelpers = .+/, '' )
+				.replace( /babelHelpers\.(\w+) = /g, 'var babelHelpers_$1 = ' )
+				.trim();
 
-			function clean ( code ) {
-				return code.replace( PLACEHOLDER, helpers )
-					.replace( /\s*var babelHelpers.+/g, '' )
-					.replace( /babelHelpers\.(\w+) = /g, 'var $1 = ' )
-					.replace( /babelHelpers\./g, '' );
+			function generate ( options ) {
+				options = extend( options, {
+					intro: options.intro ? helpers + '\n\n' + options.intro : helpers + '\n'
+				});
+
+				var generated = bundle.generate( options );
+				generated.code = generated.code.replace( /babelHelpers\./g, 'babelHelpers_' );
+				return generated;
 			}
 
 			return {
-				generate: function ( options ) {
-					if ( options.sourceMap ) {
-						throw new Error( 'rollup-babel does not currently support sourcemaps' );
-					}
-
-					var generated = bundle.generate( options );
-					generated.code = clean( generated.code );
-					return generated;
-				},
+				generate: generate,
 				write: function ( options ) {
 					if ( !options || !options.dest ) {
 						throw new Error( 'You must supply options.dest to bundle.write' );
 					}
 
-					if ( options.sourceMap ) {
-						throw new Error( 'rollup-babel does not currently support sourcemaps' );
-					}
-
 					var dest = options.dest;
-					var generated = bundle.generate( options );
+					var generated = generate( options );
 
-					var code = clean( generated.code );
+					var code = generated.code;
+
+					if ( options.sourceMap ) {
+						if ( options.sourceMap === 'inline' ) {
+							code += '\n//# sourceMappingURL=' + generated.map.toUrl();
+						}
+
+						else {
+							return Promise.all([
+								sander.writeFile( dest, code ),
+								sander.writeFile( dest + '.map', generated.map.toString() )
+							]);
+						}
+					}
 
 					return sander.writeFile( dest, code );
 				}
-			}
+			};
 		});
 }
 
