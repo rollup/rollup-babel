@@ -1,3 +1,4 @@
+var path = require( 'path' );
 var sander = require( 'sander' );
 var rollup = require( 'rollup' );
 var babel = require( 'babel-core' );
@@ -69,6 +70,10 @@ function rollupBabel ( options ) {
 			}
 
 			return {
+				imports: bundle.imports,
+				exports: bundle.exports,
+				modules: bundle.modules,
+
 				generate: generate,
 				write: function ( options ) {
 					if ( !options || !options.dest ) {
@@ -80,20 +85,23 @@ function rollupBabel ( options ) {
 
 					var code = generated.code;
 
+					var promises = [];
+
 					if ( options.sourceMap ) {
+						var url;
+
 						if ( options.sourceMap === 'inline' ) {
-							code += '\n//# sourceMappingURL=' + generated.map.toUrl();
+							url = generated.map.toUrl();
+						} else {
+							url = path.basename( dest ) + '.map';
+							promises.push( sander.writeFile( dest + '.map', generated.map.toString() ) );
 						}
 
-						else {
-							return Promise.all([
-								sander.writeFile( dest, code ),
-								sander.writeFile( dest + '.map', generated.map.toString() )
-							]);
-						}
+						code += '\n//# sourceMappingURL=' + url;
 					}
 
-					return sander.writeFile( dest, code );
+					promises.push( sander.writeFile( dest, code ) );
+					return sander.Promise.all( promises );
 				}
 			};
 		});
