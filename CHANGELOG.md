@@ -1,5 +1,9 @@
 # rollup-babel
 
+## 0.5.1
+
+* Enforce sourceMap option
+
 ## 0.5.0
 
 * Update rollup version to 0.19
