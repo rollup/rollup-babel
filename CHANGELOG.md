@@ -1,5 +1,10 @@
 # rollup-babel
 
+## 0.5.2
+
+* Append `sourceMappingURL` comment to output
+* Expose `bundle.imports`, `bundle.exports`, `bundle.modules`
+
 ## 0.5.1
 
 * Enforce sourceMap option
