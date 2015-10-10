@@ -1,5 +1,18 @@
 # rollup-babel
 
+## 0.5.0
+
+* Update rollup version to 0.19
+* Sourcemap support
+
+## 0.4.0
+
+* Update rollup version to 0.18
+
+## 0.3.0
+
+* Update rollup version to 0.17
+
 ## 0.2.0
 
 * Downgrade rollup to 0.15.0, pending [rollup#132](https://github.com/rollup/rollup/issues/132)
