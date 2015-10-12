@@ -1,5 +1,9 @@
 # rollup-babel
 
+## 0.6.0
+
+* Add CLI. Works exactly like the normal `rollup` cli, except with `rollupbabel`.
+
 ## 0.5.2
 
 * Append `sourceMappingURL` comment to output
