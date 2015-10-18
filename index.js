@@ -25,7 +25,6 @@ function rollupBabel ( options ) {
 	if ( !~index ) babelOptions.blacklist.push( 'es6.modules' );
 
 	babelOptions.externalHelpers = true;
-	babelOptions.sourceMap = !!options.sourceMap;
 
 	var usedHelpers = [];
 

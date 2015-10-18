@@ -43,14 +43,17 @@ module.exports = function ( options ) {
 	}
 };
 
-function bundle ( options, method ) {
+function bundle ( options ) {
 	if ( !options.input ) {
 		handleError({ code: 'MISSING_INPUT_OPTION' });
 	}
 
 	return rollup.rollup({
 		entry: options.input,
-		external: options.external
+		external: options.external,
+		babel: {
+			sourceMap: options.sourcemap
+		}
 	}).then( function ( bundle ) {
 		var generateOptions = {
 			dest: options.output,
