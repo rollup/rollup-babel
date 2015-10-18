@@ -1,5 +1,9 @@
 # rollup-babel
 
+## 0.6.1
+
+* Pass through sourcemap option from CLI
+
 ## 0.6.0
 
 * Add CLI. Works exactly like the normal `rollup` cli, except with `rollupbabel`.

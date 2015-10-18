@@ -1,7 +1,7 @@
 {
   "name": "rollup-babel",
   "description": "Rollup optimised for babel users",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "author": "Rich Harris",
   "dependencies": {
     "babel-core": "^5.8.23",
