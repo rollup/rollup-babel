@@ -1,6 +1,6 @@
 # rollup-babel
 
-Experimental, work-in-progress.
+**Note: this project may be superseded by [rollup-plugin-babel](https://github.com/rollup/rollup-plugin-babel) – we're considering a unified plugin API that would allow build-tool wrappers around Rollup (e.g. [grunt-rollup](https://github.com/chrisprice/grunt-rollup) or [gulp-rollup](https://github.com/mcasimir/gulp-rollup) to benefit from the same plugin ecosystem. See the discussion [here](https://github.com/rollup/rollup/pull/207)**
 
 ## What?
 
