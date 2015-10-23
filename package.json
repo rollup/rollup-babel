@@ -8,7 +8,7 @@
     "chalk": "^1.1.1",
     "minimist": "^1.2.0",
     "rollup": "^0.19.2",
-    "sander": "^0.3.4",
+    "sander": "^0.4.0",
     "source-map-support": "^0.3.2"
   },
   "devDependencies": {
