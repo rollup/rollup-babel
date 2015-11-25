@@ -16,5 +16,6 @@
   },
   "bin": {
     "rollupbabel": "./bin/rollup"
-  }
+  },
+  "repository": "rollup/rollup-babel"
 }
